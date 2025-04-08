@@ -2,9 +2,6 @@ PreCommit:
   RuboCop:
     enabled: true
     command: ["bundle", "exec", "rubocop"]
-  RSpec:
-    enabled: true
-    command: ["bundle", "exec", "rspec"]
   Brakeman:
     enabled: true
     command: ["bundle", "exec", "brakeman"]

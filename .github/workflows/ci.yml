@@ -6,9 +6,9 @@ on:
     branches: [ main ]
 
 jobs:
-  scan_ruby:
+  brakeman:
+    name: Security scan (Brakeman)
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,10 +19,11 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Scan for common Rails security vulnerabilities using static analysis
+      - name: Run Brakeman
         run: bin/brakeman --no-pager
 
-  lint:
+  rubocop:
+    name: Lint Ruby code (RuboCop)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -34,12 +35,12 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Lint code for consistent style
+      - name: Run RuboCop
         run: bin/rubocop -f github
 
-  test:
+  rspec:
+    name: Run tests (RSpec)
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres
@@ -48,13 +49,11 @@ jobs:
           POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
-        options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
-
-      # redis:
-      #   image: redis
-      #   ports:
-      #     - 6379:6379
-      #   options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
 
     steps:
       - name: Install packages
@@ -69,9 +68,23 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Run tests
+      - name: Run RSpec
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
-          # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test
+        run: bin/rails db:test:prepare && bin/rspec
+
+  sonarcloud:
+    name: Analyze with SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
