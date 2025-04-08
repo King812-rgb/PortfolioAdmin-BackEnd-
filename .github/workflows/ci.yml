@@ -69,15 +69,15 @@ jobs:
           bundler-cache: true
 
       - name: Prepare test DB (ridgepole)
-      run: |
-      bin/rails db:create
-      bundle exec ridgepole -c config/database.yml -E test -f db/Schemafile --apply
+        run: |
+          bin/rails db:create
+          bundle exec ridgepole -c config/database.yml -E test -f db/Schemafile --apply
 
       - name: Run RSpec
-      env:
-      RAILS_ENV: test
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432
-      run: bin/rspec
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432
+        run: bin/rspec
 
   sonarcloud:
     name: Analyze with SonarCloud
