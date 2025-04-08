@@ -91,5 +91,11 @@ jobs:
           bundler-cache: true
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
+        projectBaseDir: .
+        args: >
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+          -Dsonar.organization=${{ secrets.ORGANIZATION }}
+          -Dsonar.sources=.
+          -Dsonar.host.url=https://sonarcloud.io
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
