@@ -1,0 +1,19 @@
+#!/bin/bash -e
+
+# Enable jemalloc for reduced memory usage and latency.
+if [ -z "${LD_PRELOAD+x}" ]; then
+    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
+    export LD_PRELOAD
+fi
+
+# If running the rails server then create or migrate existing database
+# docker-entrypoint（変更案）
+if [[ "${*}" == *"bundle exec rails s"* ]]; then
+  if [ "$RAILS_ENV" = "development" ]; then
+    bundle exec ridgepole -c config/database.yml -E development -f ./Schemafile --apply
+  elif [ "$RAILS_ENV" = "test" ]; then
+    bundle exec ridgepole -c config/database.yml -E test -f ./Schemafile --apply
+  fi
+fi
+
+exec "${@}"
