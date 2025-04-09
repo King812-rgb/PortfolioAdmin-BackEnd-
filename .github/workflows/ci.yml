@@ -70,9 +70,11 @@ jobs:
 
       - name: check DB host reachable
         run: |
-          echo "Pinging db container..."
-          ping -c 3 db || { echo "DB not reachable"; exit 1; }
-          echo "Host db is reachable"
+          for i in {1..20}; do
+            pg_isready -h db -p 5432 && echo "Postgres is ready" && break
+            echo "Waiting for Postgres..."
+            sleep 5
+          done
 
       - name: Prepare test DB (ridgepole)
         env:
