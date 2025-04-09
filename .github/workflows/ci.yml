@@ -68,14 +68,6 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: check DB host reachable
-        run: |
-          for i in {1..20}; do
-            pg_isready -h localhost -p 5432 && echo "Postgres is ready" && break
-            echo "Waiting for Postgres..."
-            sleep 5
-          done
-
       - name: Prepare test DB (ridgepole)
         env:
           PGHOST: localhost
@@ -84,7 +76,7 @@ jobs:
           RAILS_ENV: test
         run: |
           bin/rails db:create
-          bundle exec ridgepole -c config/database.yml -E test -f db/Schemafile --apply
+          bundle exec ridgepole -c config/database.yml -E test -f ./Schemafile --apply
 
       - name: Run RSpec
         env:
