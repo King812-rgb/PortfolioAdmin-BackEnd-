@@ -67,6 +67,7 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+
       - name: Debug: check DB host reachable
         run: |
           echo "Pinging db container..."
