@@ -19,11 +19,13 @@ RSpec.describe UsersController, type: :request do
     }
   end
 
+  let(:headers) { { 'Authorization' => "Bearer #{ENV['API_KEY']}" } }
+  let(:invalid_headers) { { 'Authorization' => 'invalid_token' } }
+
   ## GETのテストケース
   describe 'GET #show' do
     context 'with valid authorization' do
     it 'returns the correct works' do
-      headers = { 'Authorization' => ENV['API_KEY'] }
       get "/user/#{user_for_show.id}", headers: headers
       body = JSON.parse(response.body)
       expect(response.status).to eq(200)
@@ -35,8 +37,7 @@ RSpec.describe UsersController, type: :request do
 
   context 'with invalid authorization' do
     it 'returns an unauthorized response' do
-      headers = { 'Authorization' => 'invalid_token' }
-      get "/user/#{user_for_show.id}", headers: headers
+      get "/user/#{user_for_show.id}", headers: invalid_headers
       body = JSON.parse(response.body)
       expect(response.status).to eq(401)
       expect(body['status']).to eq('error')
@@ -46,7 +47,6 @@ RSpec.describe UsersController, type: :request do
 
     context 'when user does not exist' do
       it 'returns a not found response' do
-        headers = { 'Authorization' => ENV['API_KEY'] }
         get "/user/999", headers: headers
         body = JSON.parse(response.body)
         expect(response.status).to eq(200)
@@ -60,7 +60,6 @@ RSpec.describe UsersController, type: :request do
     describe 'POST #create' do
     context 'with valid parameters' do
       it 'creates a new Work' do
-        headers = { 'Authorization' => ENV['API_KEY'] }
         expect {
           post '/user/create', params: create_valid_attributes, headers: headers
         }.to change(User, :count).by(1)
@@ -71,7 +70,6 @@ RSpec.describe UsersController, type: :request do
 
     context 'with invalid parameters' do
       it 'does not create a new Work and returns an error' do
-        headers = { 'Authorization' => ENV['API_KEY'] }
         post '/user/create', params: create_invalid_attributes, headers: headers
         expect(response.status).to eq(400)
         expect(JSON.parse(response.body)['status']).to eq('error')
@@ -82,7 +80,6 @@ RSpec.describe UsersController, type: :request do
 
     context 'without parameters' do
       it 'returns an error when parameters are missing' do
-        headers = { 'Authorization' => ENV['API_KEY'] }
         post '/user/create', headers: headers
         expect(response.status).to eq(400)
         expect(JSON.parse(response.body)['status']).to eq('error')
@@ -93,8 +90,7 @@ RSpec.describe UsersController, type: :request do
 
     context 'with invalid authorization' do
       it 'returns an unauthorized response' do
-        headers = { 'Authorization' => 'invalid_token' }
-        post '/user/create', params: create_valid_attributes, headers: headers
+        post '/user/create', params: create_valid_attributes, headers: invalid_headers
 
         expect(response.status).to eq(401)
         expect(JSON.parse(response.body)['status']).to eq('error')

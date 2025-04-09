@@ -69,11 +69,13 @@ RSpec.describe WorksController, type: :request do
     update_valid_attributes.merge(id: 999)
   end
 
+  let(:headers) { { 'Authorization' => "Bearer #{ENV['API_KEY']}" } }
+  let(:invalid_headers) { { 'Authorization' => 'invalid_token' } }
+
   ## GETのテストケース
   describe 'GET #show' do
     context 'with valid authorization' do
     it 'returns the correct works' do
-      headers = { 'Authorization' => ENV['API_KEY'] }
       get "/works/#{user_for_show.id}", headers: headers
       body = JSON.parse(response.body)
       expect(response.status).to eq(200)
@@ -85,8 +87,7 @@ RSpec.describe WorksController, type: :request do
 
   context 'with invalid authorization' do
     it 'returns an unauthorized response' do
-      headers = { 'Authorization' => 'invalid_token' }
-      get "/works/#{user_for_show.id}", headers: headers
+      get "/works/#{user_for_show.id}", headers: invalid_headers
       body = JSON.parse(response.body)
       expect(response.status).to eq(401)
       expect(body['status']).to eq('error')
@@ -96,7 +97,6 @@ RSpec.describe WorksController, type: :request do
 
     context 'when work does not exist' do
       it 'returns a not found response' do
-        headers = { 'Authorization' => ENV['API_KEY'] }
         get "/works/999", headers: headers
         body = JSON.parse(response.body)
         expect(response.status).to eq(200)
@@ -110,7 +110,6 @@ RSpec.describe WorksController, type: :request do
     describe 'POST #create' do
     context 'with valid parameters' do
       it 'creates a new Work' do
-        headers = { 'Authorization' => ENV['API_KEY'] }
         expect {
           post '/works/create', params: create_valid_attributes, headers: headers
         }.to change(Work, :count).by(1)
@@ -121,7 +120,6 @@ RSpec.describe WorksController, type: :request do
 
     context 'with invalid parameters' do
       it 'does not create a new Work and returns an error' do
-        headers = { 'Authorization' => ENV['API_KEY'] }
         post '/works/create', params: create_invalid_attributes, headers: headers
         expect(response.status).to eq(400)
         expect(JSON.parse(response.body)['status']).to eq('error')
@@ -131,7 +129,6 @@ RSpec.describe WorksController, type: :request do
 
     context 'without parameters' do
       it 'returns an error when parameters are missing' do
-        headers = { 'Authorization' => ENV['API_KEY'] }
         post '/works/create', headers: headers
         expect(response.status).to eq(400)
         expect(JSON.parse(response.body)['status']).to eq('error')
@@ -141,8 +138,7 @@ RSpec.describe WorksController, type: :request do
 
     context 'with invalid authorization' do
       it 'returns an unauthorized response' do
-        headers = { 'Authorization' => 'invalid_token' }
-        post '/works/create', params: create_valid_attributes, headers: headers
+        post '/works/create', params: create_valid_attributes, headers: invalid_headers
 
         expect(response.status).to eq(401)
         expect(JSON.parse(response.body)['status']).to eq('error')
@@ -155,7 +151,6 @@ RSpec.describe WorksController, type: :request do
   describe 'POST #update' do
   context 'with valid parameters' do
     it 'updates the Work' do
-      headers = { 'Authorization' => ENV['API_KEY'] }
       work_before_update = work_for_update.reload
       post "/works/update", params: update_valid_attributes, headers: headers
 
@@ -169,7 +164,6 @@ RSpec.describe WorksController, type: :request do
 
   context 'with invalid parameters' do
     it 'does not update the Work and returns an error' do
-      headers = { 'Authorization' => ENV['API_KEY'] }
       work_before_update = work_for_update.reload
       post "/works/update", params: update_invalid_attributes, headers: headers
 
@@ -184,7 +178,6 @@ RSpec.describe WorksController, type: :request do
 
   context 'when user_id is missing' do
     it 'returns a bad request response' do
-      headers = { 'Authorization' => ENV['API_KEY'] }
       post "/works/update", params: update_valid_attributes.except(:user_id), headers: headers
       body = JSON.parse(response.body)
       expect(response.status).to eq(400)
@@ -196,7 +189,6 @@ RSpec.describe WorksController, type: :request do
 
   context 'when id is missing' do
     it 'returns a bad request response' do
-      headers = { 'Authorization' => ENV['API_KEY'] }
       post "/works/update", params: update_valid_attributes.except(:id), headers: headers
       body = JSON.parse(response.body)
       expect(response.status).to eq(400)
@@ -208,7 +200,6 @@ RSpec.describe WorksController, type: :request do
 
   context 'when target Work does not exist' do
     it 'returns a not found response' do
-      headers = { 'Authorization' => ENV['API_KEY'] }
       work_before_update = work_for_update.reload
       post "/works/update", params: update_invalid_attributes_with_invalid_id, headers: headers
 
@@ -223,8 +214,7 @@ RSpec.describe WorksController, type: :request do
 
   context 'with invalid authorization' do
     it 'returns an unauthorized response' do
-      headers = { 'Authorization' => 'invalid_token' }
-      post "/works/update", params: update_valid_attributes, headers: headers
+      post "/works/update", params: update_valid_attributes, headers: invalid_headers
 
       expect(response).to have_http_status(:unauthorized)
       expect(JSON.parse(response.body)['status']).to eq('error')
@@ -237,7 +227,6 @@ end
 describe 'DELETE #destroy' do
     context 'with valid parameters' do
       it 'deletes the Work' do
-        headers = { 'Authorization' => ENV['API_KEY'] }
         work_before_delete = work_for_delete.reload
         expect {
           post "/works/destroy", params: { user_id: user_for_delete.id, id: work_for_delete.id }, headers: headers
@@ -252,7 +241,6 @@ describe 'DELETE #destroy' do
 
     context 'without parameters' do
       it 'returns an error when parameters are missing' do
-        headers = { 'Authorization' => ENV['API_KEY'] }
         post "/works/destroy", headers: headers
 
         expect(response).to have_http_status(:bad_request)
@@ -264,7 +252,6 @@ describe 'DELETE #destroy' do
 
     context 'without user_id' do
       it 'returns an error when user_id is missing' do
-        headers = { 'Authorization' => ENV['API_KEY'] }
         post "/works/destroy", params: { id: work_for_delete.id }, headers: headers
 
         expect(response).to have_http_status(:bad_request)
@@ -276,7 +263,6 @@ describe 'DELETE #destroy' do
 
     context 'without id' do
       it 'returns an error when id is missing' do
-        headers = { 'Authorization' => ENV['API_KEY'] }
         post "/works/destroy", params: { user_id: user_for_delete.id }, headers: headers
 
         expect(response).to have_http_status(:bad_request)
@@ -288,7 +274,6 @@ describe 'DELETE #destroy' do
 
     context 'when Work does not exist(user_id is invalid)' do
       it 'returns a not found response' do
-        headers = { 'Authorization' => ENV['API_KEY'] }
         post "/works/destroy", params: { user_id: 999, id: work_for_delete.id }, headers: headers
 
         expect(response).to have_http_status(:not_found)
@@ -299,7 +284,6 @@ describe 'DELETE #destroy' do
 
     context 'when Work does not exist(work_id is invalid)' do
       it 'returns a not found response' do
-        headers = { 'Authorization' => ENV['API_KEY'] }
         post "/works/destroy", params: { user_id: user_for_delete.id, id: 999 }, headers: headers
 
         expect(response).to have_http_status(:not_found)
@@ -310,8 +294,7 @@ describe 'DELETE #destroy' do
 
     context 'with invalid authorization' do
       it 'returns an unauthorized response' do
-        headers = { 'Authorization' => 'invalid_token' }
-        post "/works/destroy", params: { user_id: user_for_delete.id, id: work_for_delete.id }, headers: headers
+        post "/works/destroy", params: { user_id: user_for_delete.id, id: work_for_delete.id }, headers: invalid_headers
 
         expect(response).to have_http_status(:unauthorized)
         expect(JSON.parse(response.body)['status']).to eq('error')

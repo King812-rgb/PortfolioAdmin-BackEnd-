@@ -7,8 +7,15 @@ class ApplicationController < ActionController::API
     auth_header = request.headers["Authorization"]
     token = auth_header&.split(" ")&.last
 
-    unless token.present? && token == ENV["API_KEY"]
-      render json: { status: "error", error: { code: "UNAUTHORIZED", message: "Invalid API key" } }, status: :unauthorized
+    unless auth_header&.start_with?("Bearer ") && token == ENV["API_KEY"]
+      render_unauthorized
     end
+  end
+
+  def render_unauthorized
+    render json: {
+      status: "error",
+      error: { code: "UNAUTHORIZED", message: "Invalid API key" }
+    }, status: :unauthorized
   end
 end

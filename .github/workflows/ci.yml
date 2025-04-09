@@ -70,9 +70,9 @@ jobs:
 
       - name: Prepare test DB (ridgepole)
         env:
-          PGHOST: localhost
-          PGUSER: postgres
-          PGPASSWORD: postgres
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
           RAILS_ENV: test
         run: |
           bin/rails db:create
@@ -82,9 +82,10 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
-          PGHOST: localhost
-          PGUSER: postgres
-          PGPASSWORD: postgres
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          API_KEY: ${{ secrets.API_KEY }}
         run: bundle exec rspec
 
   sonarcloud:

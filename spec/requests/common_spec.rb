@@ -1,6 +1,6 @@
 RSpec.describe "Common", type: :request do
   it "returns 404 with appropriate error message when endpoint does not exist" do
-    headers = { 'Authorization' => ENV['API_KEY'] }
+    headers = { 'Authorization' => "Bearer #{ENV['API_KEY']}" }
     get "/not_existing_endpoint", headers: headers
 
     expect(response.status).to eq(404)

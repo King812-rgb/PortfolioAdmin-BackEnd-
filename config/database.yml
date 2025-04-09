@@ -1,9 +1,9 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  username: postgres
-  password: postgres
-  host: db
+  username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
+  password: <%= ENV.fetch("POSTGRES_PASSWORD", "postgres") %>
+  host: <%= ENV.fetch("POSTGRES_HOST", "localhost") %>
 
 development:
   <<: *default
@@ -12,4 +12,4 @@ development:
 test:
   <<: *default
   database: app_test
-  host: localhost
+  host: <%= ENV.fetch("POSTGRES_HOST", "localhost") %>
