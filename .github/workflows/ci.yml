@@ -42,7 +42,7 @@ jobs:
     name: Run tests (RSpec)
     runs-on: ubuntu-latest
     services:
-      postgres:
+      db:
         image: postgres
         env:
           POSTGRES_USER: postgres
@@ -98,5 +98,6 @@ jobs:
             -Dsonar.organization=${{ secrets.ORGANIZATION }}
             -Dsonar.sources=.
             -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.exclusions=**/*.java
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
