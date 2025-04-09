@@ -85,7 +85,7 @@ jobs:
           PGHOST: localhost
           PGUSER: postgres
           PGPASSWORD: postgres
-        run: bin/rspec
+        run: bundle exec rspec
 
   sonarcloud:
     name: Analyze with SonarCloud
