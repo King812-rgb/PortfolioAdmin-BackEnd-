@@ -50,10 +50,10 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready"
+          --health-cmd="pg_isready -U postgres"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=3
+          --health-retries=5
 
     steps:
       - name: Install packages
@@ -71,24 +71,28 @@ jobs:
       - name: check DB host reachable
         run: |
           for i in {1..20}; do
-            pg_isready -h db -p 5432 && echo "Postgres is ready" && break
+            pg_isready -h localhost -p 5432 && echo "Postgres is ready" && break
             echo "Waiting for Postgres..."
             sleep 5
           done
 
       - name: Prepare test DB (ridgepole)
         env:
-          PGHOST: db
+          PGHOST: localhost
           PGUSER: postgres
           PGPASSWORD: postgres
+          RAILS_ENV: test
         run: |
-          RAILS_ENV=test bin/rails db:create
+          bin/rails db:create
           bundle exec ridgepole -c config/database.yml -E test -f db/Schemafile --apply
 
       - name: Run RSpec
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@db:5432
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432
+          PGHOST: localhost
+          PGUSER: postgres
+          PGPASSWORD: postgres
         run: bin/rspec
 
   sonarcloud:
