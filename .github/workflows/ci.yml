@@ -67,6 +67,11 @@ jobs:
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+      - name: Debug: check DB host reachable
+        run: |
+          echo "Pinging db container..."
+          ping -c 3 db || { echo "DB not reachable"; exit 1; }
+          echo "Host db is reachable"
 
       - name: Prepare test DB (ridgepole)
         env:
