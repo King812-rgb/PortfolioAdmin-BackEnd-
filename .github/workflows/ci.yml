@@ -76,7 +76,7 @@ jobs:
       - name: Run RSpec
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432
+          DATABASE_URL: postgres://postgres:postgres@db:5432
         run: bin/rspec
 
   sonarcloud:
@@ -98,6 +98,10 @@ jobs:
             -Dsonar.organization=${{ secrets.ORGANIZATION }}
             -Dsonar.sources=.
             -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.exclusions=**/*.java
+            -Dsonar.inclusions=**/*.rb
+            -Dsonar.exclusions=**/*.java,**/*.cpp,**/*.c,**/*.h
+            -Dsonar.c.file.suffixes=-
+            -Dsonar.cpp.file.suffixes=-
+            -Dsonar.objc.file.suffixes=-
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
