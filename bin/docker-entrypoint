@@ -8,7 +8,7 @@ fi
 
 # If running the rails server then create or migrate existing database
 # docker-entrypoint（変更案）
-if [[ "${*}" == *"bundle exec rails s"* ]]; then
+if [[ "${*}" == *"rails"* && "${*}" == *"server"* ]]; then
   if [ "$RAILS_ENV" = "development" ]; then
     bundle exec ridgepole -c config/database.yml -E development -f ./Schemafile --apply
   elif [ "$RAILS_ENV" = "test" ]; then
