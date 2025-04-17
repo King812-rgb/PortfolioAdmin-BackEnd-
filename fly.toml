@@ -1,0 +1,9 @@
+app = "admin-api-for-portfolio"
+
+primary_region = "nrt"
+
+[build]
+  dockerfile = "./Dockerfile"
+
+[env]
+  RAILS_ENV = "production"
