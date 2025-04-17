@@ -13,6 +13,8 @@ if [[ "${*}" == *"bundle exec rails s"* ]]; then
     bundle exec ridgepole -c config/database.yml -E development -f ./Schemafile --apply
   elif [ "$RAILS_ENV" = "test" ]; then
     bundle exec ridgepole -c config/database.yml -E test -f ./Schemafile --apply
+  elif [ "$RAILS_ENV" = "production" ]; then
+    bundle exec ridgepole -c config/database.yml -E production -f ./Schemafile --apply
   fi
 fi
 
