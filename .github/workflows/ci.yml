@@ -99,7 +99,7 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
+        uses: SonarSource/sonarcloud-github-action@v5
         with:
           projectBaseDir: .
           args: >
