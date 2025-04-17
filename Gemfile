@@ -50,6 +50,5 @@ group :development, :test do
   gem "rspec-rails"
   gem "factory_bot_rails"
   gem "overcommit", require: false
-  gem "brakeman"
   gem "aws-sdk-s3"
 end
