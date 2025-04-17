@@ -1,5 +1,4 @@
 app = "admin-api-for-portfolio"
-
 primary_region = "nrt"
 
 [build]
@@ -7,3 +6,15 @@ primary_region = "nrt"
 
 [env]
   RAILS_ENV = "production"
+
+[[services]]
+  internal_port = 3000
+  protocol = "tcp"
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
