@@ -13,3 +13,7 @@ test:
   <<: *default
   database: app_test
   host: <%= ENV.fetch("POSTGRES_HOST", "localhost") %>
+
+production:
+  <<: *default
+  database: app_production
